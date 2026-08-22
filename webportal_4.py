@@ -57,7 +57,7 @@ raw_entries = corpus_data.split('***')
 # We only want to build the Google Cache once to save money and time
 @st.cache_resource
 def initialize_engine():
-    client = genai.Client(api_key=API_KEY)
+    client = genai.Client(api_key=GEMINI_API_KEY)
     
     system_prompt = f"""
     You are Larry. Project Aletheia is the name of the digital sanctuary that houses your life's work, 
