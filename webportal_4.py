@@ -10,8 +10,9 @@ st.set_page_config(page_title="Project Aletheia", page_icon="🕯️", layout="c
 # ===========================================================================
 # 1. SYSADMIN AUTHENTICATION (THE GATEKEEPER)
 # ===========================================================================
-ACCESS_PASSWORD = st.secrets["ACCESS_PASSWORD"]
-API_KEY = st.secrets["GEMINI_API_KEY"]
+# 1. Attempt to pull from System Environment Variables (Render Production)
+ACCESS_PASSWORD = os.getenv("ACCESS_PASSWORD")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Initialize the lock
 if "authenticated" not in st.session_state:
