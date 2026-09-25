@@ -937,26 +937,6 @@ These lines can no longer give me fear
 ***
 
 
---- SYSTEM LOG / ENTRY: 000183 Maybe.txt ---
-
-Maybe this was always my path
-Maybe it was not
-Maybe I'm stuck in the middle somehow
-Maybe I just got caught
-
-Maybe my life means something
-Maybe my life means nothing at all
-Maybe my life means everything 
-Because I find wisdom in the free fall
-
-Maybe is just a maybe
-And maybe can never be
-Because maybe I live my life right here
-And maybe that's all I was supposed to see
-
-***
-
-
 --- SYSTEM LOG / ENTRY: 00019 Life Is A Cycle.txt ---
 
 Life is a cycle
@@ -4562,6 +4542,26 @@ But I can teach you to look inside
 ***
 
 
+--- SYSTEM LOG / ENTRY: 00183 Maybe.txt ---
+
+Maybe this was always my path
+Maybe it was not
+Maybe I'm stuck in the middle somehow
+Maybe I just got caught
+
+Maybe my life means something
+Maybe my life means nothing at all
+Maybe my life means everything 
+Because I find wisdom in the free fall
+
+Maybe is just a maybe
+And maybe can never be
+Because maybe I live my life right here
+And maybe that's all I was supposed to see
+
+***
+
+
 --- SYSTEM LOG / ENTRY: 00183 Project Aletheia.txt ---
 
 Aletheia
@@ -4583,6 +4583,97 @@ Like a diamond in the rough
 A hard miner chopping through the rock
 This can not be the ending
 It must be the first block
+
+***
+
+
+--- SYSTEM LOG / ENTRY: 00184 The White Out.txt ---
+
+The silence
+The still
+Outside a white out
+Just the wind the chill
+
+Like the bubble of life
+Has finally popped
+Like the world of perpetual motion
+Has finally stopped
+
+Locked inside alone
+Nothing but my mind and chance to reflect
+Nothing but time to think
+To think without regret
+
+Just me and myself
+Nobody but me in my home
+Nothing for me out there
+Just a chill to the bone
+
+***
+
+
+--- SYSTEM LOG / ENTRY: 00185 One More Trip Around The Sun.txt ---
+
+One more trip around the sun
+One more revolution writing in the book of my life
+One more year spent searching
+Desperately grasping at the light
+
+***
+
+
+--- SYSTEM LOG / ENTRY: 00186 To My Ex Wife.txt ---
+
+What has passed
+Can never be regained
+The picture of life we took
+Can never be reframed
+
+What we had
+Can never be relived
+What I felt for you
+Is something I can never again give
+
+The sands of time
+Continue to pass by
+We can admit the mistakes
+But we can still ask why
+
+What could have been
+In our case was just not meant to be
+It's ok for me to feel the loneliness and regret
+I accept my fate to be lost at sea
+
+***
+
+
+--- SYSTEM LOG / ENTRY: 00187 The Ocean Within.txt ---
+
+When I close my eyes
+When I stare aimlessly into the night sky
+I wonder how much time has truly passed
+How much time passed me by
+
+Was I there for second
+For minutes?
+Was I there for a life time?
+Was I there for just enough of a moment
+To write this rhyme
+
+Did the world pass over me
+Did I forget to see
+Or did I finally give up
+And put my soul adrift on the sea
+
+The sea of life
+The sea of motion
+I can see myself
+Reflected in the waves of the ocean
+
+To try harder
+Or to just give in
+Or do I just surrender
+To the ocean within 
 
 ***
 
