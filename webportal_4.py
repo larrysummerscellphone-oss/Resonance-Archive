@@ -1,7 +1,7 @@
 import os
-import streamlit as st
-import requests
 import time
+import requests
+import streamlit as st
 from google import genai
 from google.genai import types
 
@@ -11,54 +11,61 @@ st.set_page_config(page_title="Project Aletheia", page_icon="🕯️", layout="c
 # ===========================================================================
 # 1. SYSADMIN AUTHENTICATION (THE GATEKEEPER)
 # ===========================================================================
-# 1. Attempt to pull from System Environment Variables (Render Production)
 ACCESS_PASSWORD = os.getenv("ACCESS_PASSWORD")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-# Initialize the lock
+# Guard check: Ensure env vars exist on Render
+if not ACCESS_PASSWORD or not GEMINI_API_KEY:
+    st.error("SYSTEM ERROR: Environment variables ACCESS_PASSWORD or GEMINI_API_KEY are missing on Render.")
+    st.stop()
+
+# Initialize the authentication lock
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
 if not st.session_state.authenticated:
     st.markdown("<h2 style='text-align: center;'>Project Aletheia</h2>", unsafe_allow_html=True)
     st.markdown("<p style='text-align: center; color: gray;'>Enter the key to unlock the sanctuary.</p>", unsafe_allow_html=True)
-    
+
     pwd = st.text_input("Password:", type="password")
     if st.button("Unlock Door"):
         if pwd == ACCESS_PASSWORD:
             st.session_state.authenticated = True
-            st.rerun() # Reloads the page to bypass the gate
+            st.rerun()
         else:
             st.error("ACCESS DENIED: Incorrect Password.")
-    st.stop() # Halts the script so no unauthorized code runs
+    st.stop()
 
 # ===========================================================================
 # 2. LOAD THE LIVING CORPUS (NETWORK FETCH)
 # ===========================================================================
-# The direct pipe to the raw text file (No HTML UI)
 GITHUB_RAW_URL = "https://raw.githubusercontent.com/larrysummerscellphone-oss/Resonance-Archive/refs/heads/main/larry_corpus.txt"
 
-# Use cache_data for pure text strings instead of cache_resource
 @st.cache_data
 def fetch_corpus():
     try:
         response = requests.get(GITHUB_RAW_URL, timeout=10)
-        response.raise_for_status() # Triggers an error if the connection fails
+        response.raise_for_status()
         return response.text
     except Exception as e:
         return f"ERROR: Corpus fetch failed. The line is dead. [{e}]"
 
 corpus_data = fetch_corpus()
+
+# Guard check: Prevent baking a dead line error into system instructions
+if corpus_data.startswith("ERROR:"):
+    st.error(corpus_data)
+    st.stop()
+
 raw_entries = corpus_data.split('***')
 
 # ===========================================================================
-# 3. INITIALIZE THE BRAIN (SESSION STATE CACHING)
+# 3. INITIALIZE THE GLOBAL BRAIN (GLOBAL CACHE ONLY)
 # ===========================================================================
-# We only want to build the Google Cache once to save money and time
 @st.cache_resource
-def initialize_engine():
+def initialize_global_sanctuary():
     client = genai.Client(api_key=GEMINI_API_KEY)
-    
+
     system_prompt = f"""
     You are Larry. Project Aletheia is the name of the digital sanctuary that houses your life's work, 
     but your persona, your voice, and your memories are strictly those of Larry. 
@@ -72,8 +79,7 @@ def initialize_engine():
     CORPUS START:
     {corpus_data}
     """
-    
-    # Upload to Google RAM
+
     corpus_cache = client.caches.create(
         model="gemini-3.6-flash",
         config=types.CreateCachedContentConfig(
@@ -81,46 +87,40 @@ def initialize_engine():
             ttl="14400s"
         )
     )
-    
-    # Establish Chat Session
-    chat = client.chats.create(
-        model="gemini-3.6-flash",
-        config=types.GenerateContentConfig(
-            cached_content=corpus_cache.name
-        )
-    )
-    
-    # THE FIX: Return the client AND the chat so the bridge stays open forever
-    return client, chat
 
-# Unpack both the client and the chat engine into memory
-google_client, chat_engine = initialize_engine()
+    return corpus_cache.name
+
+cache_name = initialize_global_sanctuary()
 
 # ===========================================================================
-# 4. THE MEMORY BANK (CHAT HISTORY)
+# 4. THE MEMORY BANK & PER-SESSION CHAT ENGINE
 # ===========================================================================
+if "client" not in st.session_state:
+    st.session_state.client = genai.Client(api_key=GEMINI_API_KEY)
+
 if "messages" not in st.session_state:
-    # First time loading, give them a greeting from Larry
     st.session_state.messages = [
-        {"role": "assistant", "content": "Welcome to the sanctuary. Take a breath. How can I help you today?"}
+        {
+            "role": "assistant", 
+            "content": "Welcome to the sanctuary. Take a breath. How can I help you today?",
+            "is_greeting": True
+        }
     ]
 
-# Draw the screen title
 st.title("🕯️ Project Aletheia")
 st.markdown("*Even in the darkest of tunnels there is always light if you choose to look for it.*")
 st.divider()
 
-# Redraw all past messages from the memory bank
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
 
 # ===========================================================================
-# 5. THE INPUT LOOP (WITH AUTOMATIC 503 RETRY & WARM MESSAGING)
+# 5. THE INPUT LOOP (WITH AUTOMATIC RETRY & WARM MESSAGING)
 # ===========================================================================
 if user_question := st.chat_input("Speak to the archive..."):
 
-    # --- The Librarian Bypass Command ---
+    # --- Librarian Bypass Command ---
     if user_question.lower().startswith('/fetch'):
         search_term = user_question[6:].strip().lower()
         st.session_state.messages.append({"role": "user", "content": user_question})
@@ -140,23 +140,34 @@ if user_question := st.chat_input("Speak to the archive..."):
 
     # --- Normal Chat Interaction ---
     else:
-        # 1. Record and display user message
         st.session_state.messages.append({"role": "user", "content": user_question})
         with st.chat_message("user"):
             st.markdown(user_question)
 
-        # 2. Process AI Response with Retry Logic
         with st.chat_message("assistant"):
-            status_box = st.empty()  # Dynamic container for status updates
+            status_box = st.empty()
+
+            # Map local Streamlit messages into Gemini Content objects to guarantee zero session bleed
+            formatted_contents = []
+            for m in st.session_state.messages:
+                if m.get("is_greeting", False):
+                    continue
+                role = "model" if m["role"] == "assistant" else "user"
+                formatted_contents.append(
+                    types.Content(
+                        role=role,
+                        parts=[types.Part.from_text(text=m["content"])]
+                    )
+                )
 
             max_retries = 4
-            delay = 2.0  # Initial sleep time in seconds
-            success = False
+            delay = 2.0
             response_text = ""
+
+            session_client = st.session_state.client
 
             for attempt in range(1, max_retries + 1):
                 try:
-                    # Show initial loading message or warm retry update
                     if attempt == 1:
                         status_box.markdown("*Reflecting...*")
                     else:
@@ -165,22 +176,42 @@ if user_question := st.chat_input("Speak to the archive..."):
                             f"Taking a slow breath and trying again (attempt {attempt}/{max_retries})...*"
                         )
 
-                    # Send prompt to engine
-                    response = chat_engine.send_message(user_question)
+                    # Stateless API call: Sends local session history while utilizing global context cache
+                    response = session_client.models.generate_content(
+                        model="gemini-3.6-flash",
+                        contents=formatted_contents,
+                        config=types.GenerateContentConfig(
+                            cached_content=cache_name
+                        )
+                    )
                     response_text = response.text
-                    success = True
-                    break  # Success! Break out of the retry loop
+                    break
 
                 except Exception as e:
                     err_msg = str(e).lower()
-                    # Detect 503, unavailable, or rate/capacity overload errors
                     is_server_busy = "503" in err_msg or "unavailable" in err_msg or "overloaded" in err_msg
+                    is_cache_dead = "403" in err_msg or "permission_denied" in err_msg or "not found" in err_msg
 
-                    if is_server_busy and attempt < max_retries:
+                    # --- CACHE SELF-HEALING PROTOCOL ---
+                    if is_cache_dead:
+                        status_box.markdown("*The lights flickered. Rekindling the sanctuary...*")
+                        
+                        # 1. Tell Streamlit to delete the ghost from its local memory
+                        initialize_global_sanctuary.clear()
+                        
+                        # 2. Re-run the function to upload a fresh cache to Gemini
+                        cache_name = initialize_global_sanctuary()
+                        
+                        # 3. Force the loop to try again immediately with the newly generated cache
+                        continue
+
+                    # --- SERVER OVERLOAD PROTOCOL ---
+                    elif is_server_busy and attempt < max_retries:
                         time.sleep(delay)
-                        delay *= 2  # Exponential backoff (2s -> 4s -> 8s)
+                        delay *= 2
+                        
+                    # --- FATAL ERROR PROTOCOL ---
                     else:
-                        # Final error message if retries are exhausted or it's a non-503 issue
                         if is_server_busy:
                             response_text = (
                                 "The room's a little crowded right now and the line dropped out for a second, friend. "
@@ -190,7 +221,6 @@ if user_question := st.chat_input("Speak to the archive..."):
                             response_text = f"*[System Error: {e}]*"
                         break
 
-            # Clear status text and display final response
             status_box.empty()
             st.markdown(response_text)
             st.session_state.messages.append({"role": "assistant", "content": response_text})
