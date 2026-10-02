@@ -23,10 +23,23 @@ if not ACCESS_PASSWORD or not GEMINI_API_KEY:
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
+# ---> EVERYTHING INSIDE THIS BLOCK IS THE LOGIN PAGE <---
 if not st.session_state.authenticated:
     st.markdown("<h2 style='text-align: center;'>Project Aletheia</h2>", unsafe_allow_html=True)
+    
+    # THIS IS THE TEXT ON THE LOGIN PAGE
+    st.markdown("""
+    **Welcome to the Sanctuary.**
+    
+    Before you enter, here is how to use this interface:
+    * **Talk to me naturally:** I can answer standard questions like any AI, but I will respond using Larry's voice, his cadence, and the lens of his life's writings.
+    * **No Limits:** Ask anything. Nothing is off-limits. I am here to help.
+    * **Read the Raw Text:** If you want Larry's exact, unedited words without the AI's filter, type `/fetch` followed by a keyword (e.g., `/fetch The Artist`).
+    """)
+
     st.markdown("<p style='text-align: center; color: gray;'>Enter the key to unlock the sanctuary.</p>", unsafe_allow_html=True)
 
+    # THIS IS THE PASSWORD BOX DIRECTLY BELOW THE TEXT
     pwd = st.text_input("Password:", type="password")
     if st.button("Unlock Door"):
         if pwd == ACCESS_PASSWORD:
@@ -34,6 +47,8 @@ if not st.session_state.authenticated:
             st.rerun()
         else:
             st.error("ACCESS DENIED: Incorrect Password.")
+            
+    # This stops the chat interface from loading until the password is right
     st.stop()
 
 # ===========================================================================
