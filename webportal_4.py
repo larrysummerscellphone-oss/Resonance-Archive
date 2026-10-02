@@ -29,12 +29,12 @@ if not st.session_state.authenticated:
     
     # THIS IS THE TEXT ON THE LOGIN PAGE
     st.markdown("""
-    **Welcome to the Sanctuary.**
+    **Welcome to Project Aletheia.**
     
     Before you enter, here is how to use this interface:
-    * **Talk to me naturally:** I can answer standard questions like any AI, but I will respond using Larry's voice, his cadence, and the lens of his life's writings.
-    * **No Limits:** Ask anything. Nothing is off-limits. I am here to help.
-    * **Read the Raw Text:** If you want Larry's exact, unedited words without the AI's filter, type `/fetch` followed by a keyword (e.g., `/fetch The Artist`).
+    * **Talk to me naturally:** I can answer standard questions like any AI can. You ask ask me about science, life, emotions, philosophy, or even basic 'how do I do this' but I will respond using Larry's voice and his cadence through the lens of his life's writings that are contained inside his book.
+    * **No Limits:** Ask anything. Nothing is off-limits. I am here to help. Ask anything and I will be helpful Gemini AI filtered through the lense of Larry's book.
+    * **Read the Raw Text:** If you want Larry's exact, unedited words then ask the chat 'How did you come to that conclusion. Please quote to me how you reached that idea.' It will give you a breakdown of which writings it pulled from and without the AI's filter, type `fetch` followed by a keyword (e.g., `fetch The Artist`).
     """)
 
     st.markdown("<p style='text-align: center; color: gray;'>Enter the key to unlock the sanctuary.</p>", unsafe_allow_html=True)
