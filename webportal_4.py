@@ -35,7 +35,7 @@ if not st.session_state.authenticated:
 * **This is an interactive writing:** This can be anything you want it to be. This is the book of Larry Don Summers Jr. filtered through an AI. This is everything and nothing and is how I chose to share it.
     * **Talk to it naturally:** I can answer standard or advanced questions like any AI can. You ask ask me about science, life, emotions, philosophy, code, or even basic 'how do I do this' but I will respond using Larry's voice and his cadence through the lens of his life's writings that are contained inside his book.
     * **No Limits:** Ask anything. Nothing is off-limits. I am here to help. Ask anything and I will be helpful Gemini AI filtered through the lense of Larry's book.
-    * **Read the Raw Text:** If you want Larry's exact, unedited words then ask the chat 'How did you come to that conclusion. Please quote to me how you reached that idea.' It will give you a breakdown of which writings it pulled from and to bypass the AI's filter, type `fetch` followed by a keyword (e.g., `fetch The Artist or fetch Entry 00089`).
+    * **Read the Raw Text:** If you want Larry's exact, unedited words then ask the chat 'How did you come to that conclusion. Please quote to me how you reached that idea.' It will give you a breakdown of which writings it pulled from and to bypass the AI's filter, type `fetch` followed by a keyword (e.g., `fetch The Artist or fetch Entry 00089 or fetch the entire libary by title`).
     """)
 
     st.markdown("<p style='text-align: center; color: gray;'>Enter the key to unlock the sanctuary.</p>", unsafe_allow_html=True)
